@@ -20,7 +20,7 @@ ENV QUIET=false
 # Copy & setup config
 RUN mkdir -p /etc/dynuiuc/
 COPY ./dynuiuc.conf dynuiuc-template.conf
-RUN envsubst < /etc/dynuiuc/dynuiuc-template.conf > /etc/dynuiuc/dynuiuc.conf
+RUN envsubst < dynuiuc-template.conf > /etc/dynuiuc/dynuiuc.conf
 
 # Create log & Send to docker
 RUN touch /var/log/dynuiuc.log
