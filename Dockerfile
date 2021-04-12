@@ -27,7 +27,7 @@ RUN touch /var/log/dynuiuc.log
 RUN ln -sf /dev/stdout /var/log/dynuiuc.log
 
 # Start Dynuiuc
-ENTRYPOINT [ "dynuiuc", "--conf_file /etc/dynuiuc/dynuiuc.conf", "--log_file /var/log/dynuiuc.log", "--pid_file /var/run/dynuiuc.pid" ]
+ENTRYPOINT [ "dynuiuc" ]
 
 # Configure Healthcheck
 HEALTHCHECK CMD [ "ps cax", "|", "grep dynuiuc" ]
