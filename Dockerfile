@@ -33,4 +33,4 @@ RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 
 # Configure Healthcheck
-HEALTHCHECK CMD [ "ps cax", "|", "grep dynuiuc" ]
+HEALTHCHECK CMD [ "ps", "cax", "|", "grep", "dynuiuc" ]
