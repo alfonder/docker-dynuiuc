@@ -1,9 +1,10 @@
-version: "2.1"
+version: "3.8"
 services:
   dynuiuc:
-    image: go2engle/dynuiuc
     container_name: dynuiuc
-    environment:
-      - USERNAME=Your_username
-      - PASSWORD=Your_password
+    image: regulad/docker-dynuiuc
     restart: unless-stopped
+    environment:
+      - USERNAME=email@example.com
+      - PASSWORD=5KqnGY#d
+      - LOCATION=Home

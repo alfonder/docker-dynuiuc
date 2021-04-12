@@ -1,36 +1,33 @@
-FROM ubuntu:18.04
+FROM ubuntu:xenial
 
-LABEL maintainer="go2engle@gmail.com"
+LABEL maintainer="52430642+regulad@users.noreply.github.com"
 
+# Install required packages
 RUN apt-get update && apt-get install wget gettext-base moreutils -y
 
 # Download the client, install it, and remove the downloaded file
-RUN wget https://www.dynu.com/support/downloadfile/31 -qO setup && \
-    dpkg -i setup && \
-    rm setup
+RUN wget https://www.dynu.com/support/downloadfile/31 -qO dynuiuc.deb
+RUN dpkg -i dynuiuc.deb
+RUN rm dynuiuc.deb
 
-# config
-RUN mkdir -p /etc/dynuiuc/
-COPY ./dynuiuc-template.conf /etc/dynuiuc/dynuiuc-template.conf
-
-#Copy entrypoint script
-COPY ./docker-entrypoint.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
-
-# log file
-RUN touch /var/log/dynuiuc.log
-# forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/dynuiuc.log
-
-# Set default ENV variables
-ENV POLLINTERVAL=120
-ENV DEBUG=false
+# Set ENV for config
 ENV IPV4=true
 ENV IPV6=true
+ENV POLLINTERVAL=120
+ENV DEBUG=false
 ENV QUIET=false
 
-# Run entrypoint script to replace variables in dynuiuc-template
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+# Copy & setup config
+RUN mkdir -p /etc/dynuiuc/
+COPY ./dynuiuc-template.conf /etc/dynuiuc/dynuiuc-template.conf
+RUN envsubst < /etc/dynuiuc/dynuiuc.conf > /etc/dynuiuc/dynuiuc.conf
 
-# Start Dynuiuc with the specified files
-CMD /usr/bin/dynuiuc --conf_file /etc/dynuiuc/dynuiuc.conf --log_file /var/log/dynuiuc.log --pid_file /var/run/dynuiuc.pid
+# Create log & Send to docker
+RUN touch /var/log/dynuiuc.log
+RUN ln -sf /dev/stdout /var/log/dynuiuc.log
+
+# Start Dynuiuc
+ENTRYPOINT [ "dynuiuc", "--conf_file /etc/dynuiuc/dynuiuc.conf", "--log_file /var/log/dynuiuc.log", "--pid_file /var/run/dynuiuc.pid" ]
+
+# Configure Healthcheck
+HEALTHCHECK CMD [ "ps cax", "|", "grep dynuiuc" ]
