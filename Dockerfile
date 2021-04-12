@@ -10,7 +10,7 @@ RUN wget https://www.dynu.com/support/downloadfile/31 -qO dynuiuc.deb
 RUN dpkg -i dynuiuc.deb
 RUN rm dynuiuc.deb
 
-# Set ENV for config
+# Set default ENV for config
 ENV IPV4=true
 ENV IPV6=true
 ENV POLLINTERVAL=120
@@ -20,14 +20,17 @@ ENV QUIET=false
 # Copy & setup config
 RUN mkdir -p /etc/dynuiuc/
 COPY ./dynuiuc.conf dynuiuc-template.conf
-RUN envsubst < dynuiuc-template.conf > /etc/dynuiuc/dynuiuc.conf
 
 # Create log & Send to docker
 RUN touch /var/log/dynuiuc.log
 RUN ln -sf /dev/stdout /var/log/dynuiuc.log
 
+# Copy entrypoint script
+COPY ./docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
+
 # Start Dynuiuc
-ENTRYPOINT [ "dynuiuc" ]
+ENTRYPOINT [ "docker-entrypoint.sh" ]
 
 # Configure Healthcheck
 HEALTHCHECK CMD [ "ps cax", "|", "grep dynuiuc" ]
