@@ -3,6 +3,7 @@ services:
   dynuiuc:
     container_name: dynuiuc
     image: regulad/docker-dynuiuc
+    network_mode: host
     restart: unless-stopped
     environment:
       - USERNAME=email@example.com
