@@ -30,7 +30,7 @@ COPY ./docker-entrypoint.sh docker-entrypoint.sh
 RUN chmod +x docker-entrypoint.sh
 
 # Start Dynuiuc
-ENTRYPOINT [ "docker-entrypoint.sh" ]
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
 
 # Configure Healthcheck
 HEALTHCHECK CMD [ "ps cax", "|", "grep dynuiuc" ]
