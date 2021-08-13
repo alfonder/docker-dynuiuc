@@ -2,10 +2,9 @@ version: "3.8"
 services:
   dynuiuc:
     container_name: dynuiuc
-    image: regulad/docker-dynuiuc
+    image: alfonder/dynuiuc-alpine
     network_mode: host
     restart: unless-stopped
     environment:
       - USERNAME=email@example.com
       - PASSWORD=5KqnGY#d
-      - LOCATION=Home
