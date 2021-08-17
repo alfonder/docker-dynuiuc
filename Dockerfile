@@ -1,29 +1,34 @@
-FROM ubuntu:xenial
+FROM alpine:3.14
 
-LABEL maintainer="52430642+regulad@users.noreply.github.com"
+LABEL org.opencontainers.image.authors="fomichev.ru@gmail.com"
 
 # Install required packages
-RUN apt-get update && apt-get install wget gettext-base moreutils -y
+RUN apk update && apk upgrade && \
+    apk --no-cache add -t deps wget rpm && \
+    apk --no-cache add procps gettext libc6-compat libgcc libstdc++
 
 # Download the client, install it, and remove the downloaded file
-RUN wget https://www.dynu.com/support/downloadfile/31 -qO dynuiuc.deb
-RUN dpkg -i dynuiuc.deb
-RUN rm dynuiuc.deb
+RUN wget https://www.dynu.com/support/downloadfile/30 -qO dynuiuc.rpm && \
+    rpm -i --nodeps dynuiuc.rpm && \
+    rpm -q --qf "%{VERSION}" dynuiuc.rpm > VERSION.txt  && \
+    rm dynuiuc.rpm && \
+    apk del --purge deps && rm -rf /tmp/* /var/cache/apk/*
 
 # Set default ENV for config
-ENV IPV4=true
-ENV IPV6=true
-ENV POLLINTERVAL=120
-ENV DEBUG=false
-ENV QUIET=false
+ENV IPV4=true \
+    IPV6=true \
+    POLLINTERVAL=120 \
+    DEBUG=false \
+    QUIET=false
 
 # Copy & setup config
-RUN mkdir -p /etc/dynuiuc/
+RUN mkdir -p /etc/dynuiuc/ && \
+    mv VERSION.txt /etc/dynuiuc/
 COPY ./dynuiuc.conf dynuiuc-template.conf
 
 # Create log & Send to docker
-RUN touch /var/log/dynuiuc.log
-RUN ln -sf /dev/stdout /var/log/dynuiuc.log
+RUN touch /var/log/dynuiuc.log && \
+    ln -sf /dev/stdout /var/log/dynuiuc.log
 
 # Copy entrypoint script
 COPY ./docker-entrypoint.sh docker-entrypoint.sh
